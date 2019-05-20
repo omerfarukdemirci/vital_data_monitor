@@ -222,7 +222,7 @@ int main(void)
 
 	Adafruit_GPS(huart2);
 	
-	begin();
+
 	HAL_Delay(10);
 	
 	sendCommand(huart2, PMTK_SET_BAUD_9600);

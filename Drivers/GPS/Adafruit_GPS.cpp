@@ -230,10 +230,6 @@ void common_init(void) {
     speed = angle = magvariation = HDOP = 0.0; // float
 }
 
-void begin(void)
-{
-  HAL_Delay(10);
-}
 
 void sendCommand(UART_HandleTypeDef huart2, char *str) {
   printf("%s\n",str);

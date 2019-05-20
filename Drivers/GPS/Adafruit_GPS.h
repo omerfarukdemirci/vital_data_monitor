@@ -74,7 +74,6 @@ All text above must be included in any redistribution
 // how long to wait when we're looking for a response
 #define MAXWAITSENTENCE 5
 
-void begin(void); 
 void Adafruit_GPS(UART_HandleTypeDef);
 char *lastNMEA(void);
 bool newNMEAreceived();
