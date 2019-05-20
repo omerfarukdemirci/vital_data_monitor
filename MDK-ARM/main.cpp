@@ -263,14 +263,19 @@ int main(void)
 	n_ir_buffer_length=500; //buffer length of 100 stores 5 seconds of samples running at 100sps
 	
 	calibrate();
-	uint8_t trans[21]="The heart rate is= i\n ";
+	uint8_t trans[37]="The heart rate is= i\n The SPO2 is= i";
 	//trans[19]=(char)n_heart_rate;
 	
 	char c = n_heart_rate%10+'0';
 	trans[20]=c;
 	c = ((n_heart_rate-(n_heart_rate%10))/10)%10+'0';
 	trans[19]=c;
-	HAL_UART_Transmit_IT(&huart3,trans,21);
+	c = n_sp02%10+'0';
+	trans[36]=c;
+	c = ((n_sp02-(n_sp02%10))/10)%10+'0';
+	trans[35]=c;
+	
+	HAL_UART_Transmit_IT(&huart3,trans,sizeof(trans));
 	maxim_heart_rate_and_oxygen_saturation(aun_ir_buffer, n_ir_buffer_length, aun_red_buffer, &n_sp02, &ch_spo2_valid, &n_heart_rate, &ch_hr_valid);
 	
 	
@@ -345,12 +350,14 @@ int main(void)
 						LCD1602_2ndLine();
 						LCD1602_print("   Spo2: ");
 						LCD1602_PrintInt(n_sp02);
-						uint8_t trans[21]="The heart rate is= i";
-						trans[19]=(char)n_heart_rate;
 						char c = n_heart_rate%10+'0';
 						trans[20]=c;
 						c = ((n_heart_rate-(n_heart_rate%10))/10)%10+'0';
 						trans[19]=c;
+						c = n_sp02%10+'0';
+						trans[36]=c;
+						c = ((n_sp02-(n_sp02%10))/10)%10+'0';
+						trans[35]=c;
 						HAL_UART_Transmit_IT(&huart3,trans,sizeof(trans));
 					}
 				}

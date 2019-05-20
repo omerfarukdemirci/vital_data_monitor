@@ -3,9 +3,9 @@
 <title>Static Call Graph - [vital_data_monitor\vital_data_monitor.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image vital_data_monitor\vital_data_monitor.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Mon May 20 04:53:11 2019
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Mon May 20 05:13:09 2019
 <BR><P>
-<H3>Maximum Stack Usage =        800 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =        792 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 main &rArr; calibrate() &rArr; maxim_max30102_read_fifo(__I2C_HandleTypeDef, unsigned*, unsigned*) &rArr; maxim_max30102_read_reg(__I2C_HandleTypeDef, unsigned char, unsigned char*) &rArr; HAL_I2C_Master_Receive &rArr; I2C_MasterRequestRead &rArr; I2C_WaitOnMasterAddressFlagUntilTimeout
 <P>
@@ -1486,8 +1486,8 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> printfa.o(i.__0printf)
 </UL>
-<P><STRONG><a name="[5b]"></a>main</STRONG> (Thumb, 1992 bytes, Stack size 232 bytes, main.o(i.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 800<LI>Call Chain = main &rArr; calibrate() &rArr; maxim_max30102_read_fifo(__I2C_HandleTypeDef, unsigned*, unsigned*) &rArr; maxim_max30102_read_reg(__I2C_HandleTypeDef, unsigned char, unsigned char*) &rArr; HAL_I2C_Master_Receive &rArr; I2C_MasterRequestRead &rArr; I2C_WaitOnMasterAddressFlagUntilTimeout
+<P><STRONG><a name="[5b]"></a>main</STRONG> (Thumb, 2046 bytes, Stack size 224 bytes, main.o(i.main))
+<BR><BR>[Stack]<UL><LI>Max Depth = 792<LI>Call Chain = main &rArr; calibrate() &rArr; maxim_max30102_read_fifo(__I2C_HandleTypeDef, unsigned*, unsigned*) &rArr; maxim_max30102_read_reg(__I2C_HandleTypeDef, unsigned char, unsigned char*) &rArr; HAL_I2C_Master_Receive &rArr; I2C_MasterRequestRead &rArr; I2C_WaitOnMasterAddressFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;begin()
 <LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;maxim_heart_rate_and_oxygen_saturation(unsigned*, int, unsigned*, int*, signed char*, int*, signed char*)
