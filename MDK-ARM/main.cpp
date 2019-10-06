@@ -50,6 +50,11 @@ int32_t n_heart_rate;   //heart rate value
 int8_t  ch_hr_valid;    //indicator to show if the heart rate calculation is valid
 uint8_t temporary_xbee[26];
 uint32_t un_min, un_max;
+uint32_t un_prev_data;  //variables to calculate the on-board LED brightness that reflects the heartbeats
+int i;
+int32_t n_brightness;
+float f_temp;
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -156,6 +161,7 @@ void calibrate()
 				LCD1602_print("Calibr. started");
 			}
 	}
+	un_prev_data=aun_red_buffer[i];
 
 }
 /* USER CODE END 0 */
@@ -167,10 +173,7 @@ void calibrate()
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	uint32_t un_prev_data;  //variables to calculate the on-board LED brightness that reflects the heartbeats
-  int i;
-  int32_t n_brightness;
-  float f_temp;
+	
 	
   /* USER CODE END 1 */
 
