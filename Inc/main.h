@@ -79,7 +79,7 @@ void Error_Handler(void);
 #define D7_Pin GPIO_PIN_11
 #define D7_GPIO_Port GPIOD
 /* USER CODE BEGIN Private defines */
-
+void string2hexString(char* input, char* output);
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

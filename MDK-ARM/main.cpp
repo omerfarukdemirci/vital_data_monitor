@@ -29,7 +29,7 @@
 #include "STM_MY_LCD16X2.h"
 #include "Adafruit_GPS.h"
 #include "xbeelib.h"
-
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,9 +46,10 @@ int32_t n_ir_buffer_length;    //data length
 uint32_t aun_red_buffer[500];    //Red LED sensor data
 int32_t n_sp02; //SPO2 value
 int8_t ch_spo2_valid;   //indicator to show if the SP02 calculation is valid
-int32_t n_heart_rate;   //heart rate value
+int32_t n_heart_rate,lati,logi,alti;   //heart rate value
 int8_t  ch_hr_valid;    //indicator to show if the heart rate calculation is valid
 uint8_t temporary_xbee[26];
+char hex_str[((45-1)*2)];
 uint32_t un_min, un_max;
 uint32_t un_prev_data;  //variables to calculate the on-board LED brightness that reflects the heartbeats
 int i;
@@ -87,6 +88,7 @@ uint8_t temporary;
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
 
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
@@ -163,6 +165,23 @@ void calibrate()
 	}
 	un_prev_data=aun_red_buffer[i];
 
+}
+void string2hexString(char* input, char* output)
+{
+    int loop;
+    int i; 
+    
+    i=0;
+    loop=0;
+    
+    while(input[loop] != '\0')
+    {
+        sprintf((char*)(output+i),"%02X", input[loop]);
+        loop+=1;
+        i+=2;
+    }
+    //insert NULL at the end of the output string
+    output[i++] = '\0';
 }
 /* USER CODE END 0 */
 
@@ -247,7 +266,6 @@ int main(void)
 	
 	LCD1602_Begin8BIT(RS_GPIO_Port,RS_Pin,E_Pin,D0_GPIO_Port,D0_Pin,D1_Pin,D2_Pin,D3_Pin,D4_GPIO_Port,D4_Pin,D5_Pin,D6_Pin,D7_Pin);
 	LCD1602_print("Welcome Body!");
-	
 	for(uint8_t i=0;i<255;i++)
 	{
 		if(HAL_I2C_IsDeviceReady(&hi2c1,i,1,10)==HAL_OK)
@@ -266,18 +284,77 @@ int main(void)
 	n_ir_buffer_length=500; //buffer length of 100 stores 5 seconds of samples running at 100sps
 	
 	calibrate();
-	uint8_t trans[37]="The heart rate is= i\n The SPO2 is= i";
+	uint8_t trans[45]="H=10, S=20, 00.000000N, 00.000000E, 0000.00M";
 	//trans[19]=(char)n_heart_rate;
 	
+	lati=(uint32_t)(latitude*10000);
+	logi=(uint32_t)(longitude*10000);
+	alti=(uint32_t)(altitude*100);
+	lati=38742461;
+	logi=35478911;
+	alti=105412;
 	char c = n_heart_rate%10+'0';
-	trans[20]=c;
+	trans[3]=c;
 	c = ((n_heart_rate-(n_heart_rate%10))/10)%10+'0';
-	trans[19]=c;
+	trans[2]=c;
 	c = n_sp02%10+'0';
-	trans[36]=c;
+	trans[9]=c;
 	c = ((n_sp02-(n_sp02%10))/10)%10+'0';
-	trans[35]=c;
+	trans[8]=c;
 	
+	c=lati%10+'0';
+	trans[20]=c;
+	c = ((lati-(lati%10))/10)%10+'0';
+	trans[19]=c;
+	c = ((lati-(lati%100))/100)%10+'0';
+	trans[18]=c;
+	c = ((lati-(lati%1000))/1000)%10+'0';
+	trans[17]=c;
+	c = ((lati-(lati%10000))/10000)%10+'0';
+	trans[16]=c;
+	c = ((lati-(lati%100000))/100000)%10+'0';
+	trans[15]=c;
+	c = ((lati-(lati%1000000))/1000000)%10+'0';
+	trans[13]=c;
+	c = ((lati-(lati%10000000))/10000000)%10+'0';
+	trans[12]=c;
+	
+	c=logi%10+'0';
+	trans[32]=c;
+	c = ((logi-(logi%10))/10)%10+'0';
+	trans[31]=c;
+	c = ((logi-(logi%100))/100)%10+'0';
+	trans[30]=c;
+	c = ((logi-(logi%1000))/1000)%10+'0';
+	trans[29]=c;
+	c = ((logi-(logi%10000))/10000)%10+'0';
+	trans[28]=c;
+	c = ((logi-(logi%100000))/1000000)%10+'0';
+	trans[27]=c;
+	c = ((logi-(logi%1000000))/1000000)%10+'0';
+	trans[25]=c;
+	c = ((logi-(logi%10000000))/10000000)%10+'0';
+	trans[24]=c;
+	
+	c=alti%10+'0';
+	trans[42]=c;
+	c = ((alti-(alti%10))/10)%10+'0';
+	trans[41]=c;
+	c = ((alti-(alti%100))/100)%10+'0';
+	trans[39]=c;
+	c = ((alti-(alti%1000))/1000)%10+'0';
+	trans[38]=c;
+	c = ((alti-(alti%10000))/10000)%10+'0';
+	trans[37]=c;
+	c = ((alti-(alti%100000))/100000)%10+'0';
+	trans[36]=c;
+	//string2hexString((char*)&trans,hex_str);
+	//uint8_t sendd[118]="7E003700010013A200419A292A00483D30302C20533D30302C2030302E3030303030304E2C2030302E303030303030452C20303030302E30304D";
+	//sendd[116]='8';
+	//sendd[117]='C';
+	/*for(int j=0;j<87;j++){
+	sendd[j+28]=hex_str[j];
+	}*/
 	HAL_UART_Transmit_IT(&huart3,trans,sizeof(trans));
 	maxim_heart_rate_and_oxygen_saturation(aun_ir_buffer, n_ir_buffer_length, aun_red_buffer, &n_sp02, &ch_spo2_valid, &n_heart_rate, &ch_hr_valid);
 	
@@ -353,14 +430,71 @@ int main(void)
 						LCD1602_2ndLine();
 						LCD1602_print("   Spo2: ");
 						LCD1602_PrintInt(n_sp02);
+						lati=38742461;
+						logi=35478911;
+						alti=105412;
 						char c = n_heart_rate%10+'0';
-						trans[20]=c;
+						trans[3]=c;
 						c = ((n_heart_rate-(n_heart_rate%10))/10)%10+'0';
-						trans[19]=c;
+						trans[2]=c;
 						c = n_sp02%10+'0';
-						trans[36]=c;
+						trans[9]=c;
 						c = ((n_sp02-(n_sp02%10))/10)%10+'0';
-						trans[35]=c;
+						trans[8]=c;
+						
+						c=lati%10+'0';
+						trans[20]=c;
+						c = ((lati-(lati%10))/10)%10+'0';
+						trans[19]=c;
+						c = ((lati-(lati%100))/100)%10+'0';
+						trans[18]=c;
+						c = ((lati-(lati%1000))/1000)%10+'0';
+						trans[17]=c;
+						c = ((lati-(lati%10000))/10000)%10+'0';
+						trans[16]=c;
+						c = ((lati-(lati%100000))/100000)%10+'0';
+						trans[15]=c;
+						c = ((lati-(lati%1000000))/1000000)%10+'0';
+						trans[13]=c;
+						c = ((lati-(lati%10000000))/10000000)%10+'0';
+						trans[12]=c;
+						
+						c=logi%10+'0';
+						trans[32]=c;
+						c = ((logi-(logi%10))/10)%10+'0';
+						trans[31]=c;
+						c = ((logi-(logi%100))/100)%10+'0';
+						trans[30]=c;
+						c = ((logi-(logi%1000))/1000)%10+'0';
+						trans[29]=c;
+						c = ((logi-(logi%10000))/10000)%10+'0';
+						trans[28]=c;
+						c = ((logi-(logi%100000))/1000000)%10+'0';
+						trans[27]=c;
+						c = ((logi-(logi%1000000))/1000000)%10+'0';
+						trans[25]=c;
+						c = ((logi-(logi%10000000))/10000000)%10+'0';
+						trans[24]=c;
+						
+						c=alti%10+'0';
+						trans[42]=c;
+						c = ((alti-(alti%10))/10)%10+'0';
+						trans[41]=c;
+						c = ((alti-(alti%100))/100)%10+'0';
+						trans[39]=c;
+						c = ((alti-(alti%1000))/1000)%10+'0';
+						trans[38]=c;
+						c = ((alti-(alti%10000))/10000)%10+'0';
+						trans[37]=c;
+						c = ((alti-(alti%100000))/100000)%10+'0';
+						trans[36]=c;
+						//string2hexString((char*)&trans,hex_str);
+						//uint8_t sendd[118]="7E003700010013A200419A292A00483D30302C20533D30302C2030302E3030303030304E2C2030302E303030303030452C20303030302E30304D";
+						//sendd[116]='8';
+						//sendd[117]='C';
+						/*for(int j=0;j<87;j++){
+						sendd[j+28]=hex_str[j];
+						}*/
 						HAL_UART_Transmit_IT(&huart3,trans,sizeof(trans));
 					}
 				}
